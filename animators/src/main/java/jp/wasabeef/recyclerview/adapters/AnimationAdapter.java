@@ -8,10 +8,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import jp.wasabeef.recyclerview.internal.ViewHelper;
 
-import java.util.WeakHashMap;
-
 /**
- * Copyright (C) 2015 Wasabeef
+ * Copyright (C) 2017 Wasabeef
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +29,6 @@ public abstract class AnimationAdapter extends RecyclerView.Adapter<RecyclerView
   private int mDuration = 300;
   private Interpolator mInterpolator = new LinearInterpolator();
   private int mLastPosition = -1;
-
-  private WeakHashMap<RecyclerView.ViewHolder, Integer> mHolders = new WeakHashMap<>();
 
   private boolean isFirstOnly = true;
 
@@ -57,15 +53,21 @@ public abstract class AnimationAdapter extends RecyclerView.Adapter<RecyclerView
   @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
     mAdapter.onBindViewHolder(holder, position);
 
-    if (!isFirstOnly || position > mLastPosition || !Integer.valueOf(position).equals(mHolders.get(holder))) {
+    int adapterPosition = holder.getAdapterPosition();
+    if (!isFirstOnly || adapterPosition > mLastPosition) {
       for (Animator anim : getAnimators(holder.itemView)) {
         anim.setDuration(mDuration).start();
         anim.setInterpolator(mInterpolator);
       }
-      mHolders.put(holder, position);
+      mLastPosition = adapterPosition;
     } else {
       ViewHelper.clear(holder.itemView);
     }
+  }
+
+  @Override public void onViewRecycled(RecyclerView.ViewHolder holder) {
+    mAdapter.onViewRecycled(holder);
+    super.onViewRecycled(holder);
   }
 
   @Override public int getItemCount() {
@@ -97,9 +99,8 @@ public abstract class AnimationAdapter extends RecyclerView.Adapter<RecyclerView
   public RecyclerView.Adapter<RecyclerView.ViewHolder> getWrappedAdapter() {
     return mAdapter;
   }
-  
-  @Override
-  public long getItemId(int position) {
-        return mAdapter.getItemId(position);
+
+  @Override public long getItemId(int position) {
+    return mAdapter.getItemId(position);
   }
 }

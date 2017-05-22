@@ -4,7 +4,7 @@ import android.support.v4.view.ViewCompat;
 import android.view.View;
 
 /**
- * Copyright (C) 2015 Wasabeef
+ * Copyright (C) 2017 Wasabeef
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,8 @@ public final class ViewHelper {
     ViewCompat.setRotation(v, 0);
     ViewCompat.setRotationY(v, 0);
     ViewCompat.setRotationX(v, 0);
-    // @TODO https://code.google.com/p/android/issues/detail?id=80863
-    //        ViewCompat.setPivotY(v, v.getMeasuredHeight() / 2);
-    v.setPivotY(v.getMeasuredHeight() / 2);
+    ViewCompat.setPivotY(v, v.getMeasuredHeight() / 2);
     ViewCompat.setPivotX(v, v.getMeasuredWidth() / 2);
-    ViewCompat.animate(v).setInterpolator(null);
+    ViewCompat.animate(v).setInterpolator(null).setStartDelay(0);
   }
 }

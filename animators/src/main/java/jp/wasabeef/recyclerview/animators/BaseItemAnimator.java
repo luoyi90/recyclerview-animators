@@ -1,6 +1,6 @@
 package jp.wasabeef.recyclerview.animators;
 /*
- * Copyright (C) 2015 Wasabeef
+ * Copyright (C) 2017 Wasabeef
  * Copyright (C) 2014 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,10 +24,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
 import jp.wasabeef.recyclerview.internal.ViewHelper;
 
@@ -49,7 +51,7 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
   protected ArrayList<ViewHolder> mRemoveAnimations = new ArrayList<>();
   private ArrayList<ViewHolder> mChangeAnimations = new ArrayList<>();
 
-  protected Interpolator mInterpolator = new LinearInterpolator();
+  protected Interpolator mInterpolator = new DecelerateInterpolator();
 
   private static class MoveInfo {
 
@@ -127,12 +129,16 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
       mPendingMoves.clear();
       Runnable mover = new Runnable() {
         @Override public void run() {
+          boolean removed = mMovesList.remove(moves);
+          if (!removed) {
+            // already canceled
+            return;
+          }
           for (MoveInfo moveInfo : moves) {
             animateMoveImpl(moveInfo.holder, moveInfo.fromX, moveInfo.fromY, moveInfo.toX,
                 moveInfo.toY);
           }
           moves.clear();
-          mMovesList.remove(moves);
         }
       };
       if (removalsPending) {
@@ -150,11 +156,15 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
       mPendingChanges.clear();
       Runnable changer = new Runnable() {
         @Override public void run() {
+          boolean removed = mChangesList.remove(changes);
+          if (!removed) {
+            // already canceled
+            return;
+          }
           for (ChangeInfo change : changes) {
             animateChangeImpl(change);
           }
           changes.clear();
-          mChangesList.remove(changes);
         }
       };
       if (removalsPending) {
@@ -172,11 +182,15 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
       mPendingAdditions.clear();
       Runnable adder = new Runnable() {
         public void run() {
+          boolean removed = mAdditionsList.remove(additions);
+          if (!removed) {
+            // already canceled
+            return;
+          }
           for (ViewHolder holder : additions) {
             doAnimateAdd(holder);
           }
           additions.clear();
-          mAdditionsList.remove(additions);
         }
       };
       if (removalsPending || movesPending || changesPending) {
@@ -206,7 +220,7 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
     ViewHelper.clear(holder.itemView);
 
     if (holder instanceof AnimateViewHolder) {
-      ((AnimateViewHolder) holder).preAnimateRemoveImpl();
+      ((AnimateViewHolder) holder).preAnimateRemoveImpl(holder);
     } else {
       preAnimateRemoveImpl(holder);
     }
@@ -216,7 +230,7 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
     ViewHelper.clear(holder.itemView);
 
     if (holder instanceof AnimateViewHolder) {
-      ((AnimateViewHolder) holder).preAnimateAddImpl();
+      ((AnimateViewHolder) holder).preAnimateAddImpl(holder);
     } else {
       preAnimateAddImpl(holder);
     }
@@ -224,7 +238,7 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
 
   private void doAnimateRemove(final RecyclerView.ViewHolder holder) {
     if (holder instanceof AnimateViewHolder) {
-      ((AnimateViewHolder) holder).animateRemoveImpl(new DefaultRemoveVpaListener(holder));
+      ((AnimateViewHolder) holder).animateRemoveImpl(holder, new DefaultRemoveVpaListener(holder));
     } else {
       animateRemoveImpl(holder);
     }
@@ -234,7 +248,7 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
 
   private void doAnimateAdd(final RecyclerView.ViewHolder holder) {
     if (holder instanceof AnimateViewHolder) {
-      ((AnimateViewHolder) holder).animateAddImpl(new DefaultAddVpaListener(holder));
+      ((AnimateViewHolder) holder).animateAddImpl(holder, new DefaultAddVpaListener(holder));
     } else {
       animateAddImpl(holder);
     }
@@ -259,7 +273,6 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
     mPendingAdditions.add(holder);
     return true;
   }
-
 
   protected long getAddDelay(final RecyclerView.ViewHolder holder) {
     return Math.abs(holder.getAdapterPosition() * getAddDuration() / 4);
@@ -323,11 +336,6 @@ public abstract class BaseItemAnimator extends SimpleItemAnimator {
         dispatchFinishedWhenDone();
       }
     }).start();
-  }
-
-  @Override public boolean animateChange(ViewHolder oldHolder, ViewHolder newHolder,
-      ItemHolderInfo preLayoutInfo, ItemHolderInfo postLayoutInfo) {
-    return false;
   }
 
   @Override

@@ -22,10 +22,10 @@ Please feel free to use this.
 # Demo
 
 ### ItemAnimator
-<img src="art/demo.gif" width="32%"> <img src="art/demo2.gif" width="32%"> <img src="art/demo4.gif" width="32%">
+<img src="art/demo.gif" width="32%"> <img src="art/demo2.gif" width="32%"> <img src="art/demo3.gif" width="32%">
 
 ### Adapters
-![](art/demo3.gif) ![](art/demo5.gif)
+<img src="art/demo4.gif" width="32%"> <img src="art/demo5.gif" width="32%">
 
 # Samples
 
@@ -37,19 +37,10 @@ Please feel free to use this.
 
 #### Gradle
 
-**If you are using a RecyclerView 23.1.0 (released Oct 2015) or higher.**
 ```groovy
 dependencies {
   // jCenter
-  compile 'jp.wasabeef:recyclerview-animators:2.2.0'
-}
-```
-
-**If you are using a RecyclerView 23.0.1 or below.**
-```groovy
-dependencies {
-  // jCenter
-  compile 'jp.wasabeef:recyclerview-animators:1.3.0'
+  compile 'jp.wasabeef:recyclerview-animators:2.2.6'
 }
 ```
 
@@ -65,7 +56,8 @@ recyclerView.setItemAnimator(new SlideInLeftAnimator());
 
 ```java
 RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list);
-recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
+SlideInUpAnimator animator = new SlideInUpAnimator(new OvershootInterpolator(1f));
+recyclerView.setItemAnimator(animator);
 ```
 
 ## Step 2
@@ -116,18 +108,22 @@ recyclerView.setItemAnimator(animator);
 
 ### Advanced Step 5
 
-By extending AnimateViewHolder, you can override preset animation.  
+By implementing AnimateViewHolder, you can override preset animation.
 So, custom animation can be set depending on view holder.
 
 ```java
-static class MyViewHolder extends AnimateViewHolder {
-
+static class MyViewHolder extends RecyclerView.ViewHolder implements AnimateViewHolder {
   public MyViewHolder(View itemView) {
     super(itemView);
   }
 
   @Override
-  public void animateRemoveImpl(ViewPropertyAnimatorListener listener) {
+  public void preAnimateRemoveImpl(RecyclerView.ViewHolder holder) {
+
+  }
+
+  @Override
+  public void animateRemoveImpl(RecyclerView.ViewHolder holder, ViewPropertyAnimatorListener listener) {
     ViewCompat.animate(itemView)
           .translationY(-itemView.getHeight() * 0.3f)
           .alpha(0)
@@ -137,13 +133,13 @@ static class MyViewHolder extends AnimateViewHolder {
   }
 
   @Override
-  public void preAnimateAddImpl() {
+  public void preAnimateAddImpl(RecyclerView.ViewHolder holder) {
     ViewCompat.setTranslationY(itemView, -itemView.getHeight() * 0.3f);
     ViewCompat.setAlpha(itemView, 0);
   }
 
   @Override
-  public void animateAddImpl(ViewPropertyAnimatorListener listener) {
+  public void animateAddImpl(RecyclerView.ViewHolder holder, ViewPropertyAnimatorListener listener) {
     ViewCompat.animate(itemView)
           .translationY(0)
           .alpha(1)
@@ -251,6 +247,7 @@ Icon | Application
 ------------ | -------------
 <img src="https://lh6.ggpht.com/6zKH_uQY1bxCwXL4DLo_uoFEOXdShi3BgmN6XRHlaJ-oA1svmq6y1PZkmO50nWQn2Lg=w300-rw" width="48" height="48" /> | [Ameba Ownd](https://play.google.com/store/apps/details?id=jp.co.cyberagent.madrid)
 <img src="http://quitnowapp.com/xtra/QuitNow!-114.png" width="48" height="48" /> | [QuitNow!](https://play.google.com/store/apps/details?id=com.EAGINsoftware.dejaloYa)
+<img src="https://lh3.googleusercontent.com/ZOrekp-ho-ecWG1TyvuOs0LoB5M4QYWCCLS5lFbAHhp_SklSd06544ENG3uC97zGWes=w300-rw" width="48" height="48" /> | [AbemaTV](https://play.google.com/store/apps/details?id=tv.abema)
 
 Developed By
 -------
@@ -279,7 +276,7 @@ Thanks
 License
 -------
 
-    Copyright 2015 Wasabeef
+    Copyright 2017 Wasabeef
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

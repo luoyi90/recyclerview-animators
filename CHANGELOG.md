@@ -1,6 +1,56 @@
 Change Log
 ==========
 
+Version 2.2.6 *(2017-03-17)*
+----------------------------
+
+Feature:
+- [Changed Interpolator to DecelerateInterpolator #125](https://github.com/wasabeef/recyclerview-animators/pull/125)
+
+Update:
+- Build Tools 25 -> 25.0.2
+- Support Library 24.2.0 -> 25.3.0
+
+Bugfix:
+- [Fix animations not fully canceled on endAnimations()  #86](https://github.com/wasabeef/recyclerview-animators/pull/86)
+
+
+Version 2.2.5 *(2016-12-02)*
+----------------------------
+
+Update:
+- Build Tools 24.0.2 -> 25
+- Support Library 23.4.0 -> 24.2.0
+
+
+Version 2.2.4 *(2016-08-03)*
+----------------------------
+
+Update:  
+- Build Tools 23.0.1 -> 24.0.2  
+- Support Library 23.0.1 -> 23.4.0  
+
+
+Version 2.2.3 *(2016-04-19)*
+----------------------------
+
+Bug fix:  
+ [Dispatch onViewRecycled event to wrapped adapter #80](https://github.com/wasabeef/recyclerview-animators/pull/80)  
+ [Fix setStartDelay() is not reset by clear() #82](https://github.com/wasabeef/recyclerview-animators/pull/82)  
+ 
+Update:  
+ Support library 23.2.1
+
+Version 2.2.2 *(2016-04-05)*
+----------------------------
+
+Bug fix
+
+Version 2.2.1 *(2016-02-28)*
+----------------------------
+
+Bug fix: firstOnly
+
 Version 2.2.0 *(2016-01-29)*
 ----------------------------
 

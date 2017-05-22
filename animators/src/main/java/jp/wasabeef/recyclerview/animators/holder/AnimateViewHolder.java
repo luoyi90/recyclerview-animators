@@ -2,21 +2,15 @@ package jp.wasabeef.recyclerview.animators.holder;
 
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
-public abstract class AnimateViewHolder extends RecyclerView.ViewHolder {
+public interface AnimateViewHolder {
 
-  public AnimateViewHolder(View itemView) {
-    super(itemView);
-  }
+  void preAnimateAddImpl(final RecyclerView.ViewHolder holder);
 
-  public void preAnimateAddImpl() {
-  }
+  void preAnimateRemoveImpl(final RecyclerView.ViewHolder holder);
 
-  public void preAnimateRemoveImpl() {
-  }
+  void animateAddImpl(final RecyclerView.ViewHolder holder, ViewPropertyAnimatorListener listener);
 
-  public abstract void animateAddImpl(ViewPropertyAnimatorListener listener);
-
-  public abstract void animateRemoveImpl(ViewPropertyAnimatorListener listener);
+  void animateRemoveImpl(final RecyclerView.ViewHolder holder,
+      ViewPropertyAnimatorListener listener);
 }
